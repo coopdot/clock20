@@ -53,7 +53,7 @@ const first_day_of_twentieth_of_year = (twentieth_of_year) => {
                                 // 19+12+19 = 55 = 31+25
                                 return (twentieth_of_year * 18 + i + 2);
                         }
-                        return (twentieth_of_year * 18 + i + 2);
+                        return (twentieth_of_year * 18 + i + 1);
                 }
         }
         return 0;
@@ -63,26 +63,32 @@ const first_day_of_twentieth_of_year = (twentieth_of_year) => {
 let tick = 0;
 let sec = 0;
 
-const updateY = (rawY, doy) => {
+const updateY = (rawY, twentieth_of_year) => {
+        yearsE.textContent = (rawY+10000) + "-" + twentieth_of_year;
+}
+
+const updateD = (rawY) => {
+        const now = ms_since_y2k();
+        const day_of_year = Math.floor((
+                ms_since_y2k() - ms_since_y2k(env.new_year_date)
+        ) / daily_milliseconds);
+        const quadcentieth_of_day = Math.floor(now / (daily_milliseconds / 400)) % 400;
+
         let twentieth_of_year = 19;
         while (twentieth_of_year >= 0) {
-                if (doy >= first_day_of_twentieth_of_year(twentieth_of_year) ) break;
+                if (day_of_year >= first_day_of_twentieth_of_year(twentieth_of_year) ) break;
                 twentieth_of_year--;
         }
 
-        yearsE.textContent = (rawY+10000) + "-" + twentieth_of_year;
+        updateY(rawY,twentieth_of_year);
+        daysE.textContent = (day_of_year - first_day_of_twentieth_of_year(twentieth_of_year)) + " " + quadcentieth_of_day;
 }
 
 // Initialize:
 env.update();
 
 const intervalID = window.setInterval((() => {
-        const day_of_year = Math.floor((
-                ms_since_y2k() - ms_since_y2k(env.new_year_date)
-        ) / daily_milliseconds);
-
         const time = new Date();
-        updateY(time.getFullYear(),day_of_year);
-        daysE.textContent = time.getDate() + " " + time.getHours() + ":" + time.getMinutes();
+        updateD(time.getFullYear());
         secsE.textContent = time.getSeconds();
 }),(rate * 1000));
