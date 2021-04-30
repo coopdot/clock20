@@ -22,7 +22,8 @@ const daily_milliseconds = 86400000; // The number of milliseconds in a day
 
 // Time:
 const env = {
-        y2k_date: null,
+        quadcentury: 30, // 0 indexed, 30 is the years 2000-2399
+        new_quadcentury_date: null,
         new_year_date: null,
         is_leap: null,
         tick: 0,
@@ -31,8 +32,10 @@ const env = {
                 const time = new Date();
                 const year = time.getFullYear();
 
-                this.y2k_date = Date.UTC(2000,0,1);
-                this.new_year_date = Date.UTC(year,0,1);
+                if (time.getFullYear() < 2000 || time.getFullYear() > 2399) this.quadcentury = Math.floor((time.getFullYear()+10000) / 400);
+
+                this.new_quadcentury_date = Date.UTC((this.quadcentury * 400)-10000, 0, 1);
+                this.new_year_date = Date.UTC(year, 0, 1);
 
                 if ((year % 400) === 0)      this.is_leap = true;
                 else if ((year % 100) === 0) this.is_leap = false;
@@ -41,9 +44,9 @@ const env = {
         }
 }
 
-const ms_since_y2k = (time = null) => {
+const ms_since_quadcentury = (time = null) => {
         if (time === null) time = Date.now();
-        return ((time - env.y2k_date) % (quadcentury_days * daily_milliseconds));
+        return ((time - env.new_quadcentury_date) % (quadcentury_days * daily_milliseconds));
 }
 
 // Utilities:
@@ -63,9 +66,9 @@ const first_day_of_twentieth_of_year = (twentieth_of_year) => {
 
 // Moving parts:
 const resetClock = (initial = false) => {
-        const now = ms_since_y2k();
+        const now = ms_since_quadcentury();
         const day_of_year = Math.floor((
-                now - ms_since_y2k(env.new_year_date)
+                now - ms_since_quadcentury(env.new_year_date)
         ) / daily_milliseconds);
         const quadcentieth_of_day = Math.floor(now / (daily_milliseconds / 400)) % 400;
         env.sec = Math.floor(now / 1000) % 216;
@@ -79,12 +82,11 @@ const resetClock = (initial = false) => {
         if (initial === true || (day_of_year === first_day_of_twentieth_of_year(twentieth_of_year && env.sec === 0))) {
                 if (twentieth_of_year === 0) env.resetYear();
 
-                const quadcentury = 30; // 0 indexed, 30 is the years 2000-2399
                 const year_of_quadcentury = Math.floor(now / (quadcentury_days * daily_milliseconds) * 400);
 
                 yearsE.textContent =
-                        alphabet[Math.floor(quadcentury / 20)] +
-                        alphabet[(quadcentury % 20)] +
+                        alphabet[Math.floor(env.quadcentury / 20)] +
+                        alphabet[(env.quadcentury % 20)] +
                         alphabet[Math.floor(year_of_quadcentury / 20)] +
                         alphabet[(year_of_quadcentury % 20)] +
                         alphabet[20] +
