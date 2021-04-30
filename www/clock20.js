@@ -25,7 +25,9 @@ const env = {
         y2k_date: null,
         new_year_date: null,
         is_leap: null,
-        update() {
+        tick: 0,
+        sec: 0,
+        resetYear() {
                 const time = new Date();
                 const year = time.getFullYear();
 
@@ -60,35 +62,38 @@ const first_day_of_twentieth_of_year = (twentieth_of_year) => {
 }
 
 // Moving parts:
-let tick = 0;
-let sec = 0;
-
-const updateY = (rawY, twentieth_of_year) => {
+const updateY = (twentieth_of_year) => {
+        if (twentieth_of_year === 0) env.resetYear();
+        const time = new Date();
+        const rawY = (time.getFullYear());
         yearsE.textContent = (rawY+10000) + "-" + twentieth_of_year;
 }
 
-const updateD = (rawY) => {
+const resetClock = (initial = false) => {
         const now = ms_since_y2k();
         const day_of_year = Math.floor((
-                ms_since_y2k() - ms_since_y2k(env.new_year_date)
+                now - ms_since_y2k(env.new_year_date)
         ) / daily_milliseconds);
         const quadcentieth_of_day = Math.floor(now / (daily_milliseconds / 400)) % 400;
+        env.sec = Math.floor(now / 1000) % 216;
 
         let twentieth_of_year = 19;
         while (twentieth_of_year >= 0) {
-                if (day_of_year >= first_day_of_twentieth_of_year(twentieth_of_year) ) break;
+                if (day_of_year >= first_day_of_twentieth_of_year(twentieth_of_year)) break;
                 twentieth_of_year--;
         }
 
-        updateY(rawY,twentieth_of_year);
+        if (initial === true || (day_of_year === first_day_of_twentieth_of_year(twentieth_of_year && env.sec === 0))) updateY(twentieth_of_year);
+
         daysE.textContent = (day_of_year - first_day_of_twentieth_of_year(twentieth_of_year)) + " " + quadcentieth_of_day;
 }
 
 // Initialize:
-env.update();
+env.resetYear();
+resetClock(true);
 
 const intervalID = window.setInterval((() => {
-        const time = new Date();
-        updateD(time.getFullYear());
-        secsE.textContent = time.getSeconds();
+        env.sec++;
+        if ((env.sec % 216) === 0) resetClock();
+        secsE.textContent = env.sec;
 }),(rate * 1000));
