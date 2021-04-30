@@ -14,7 +14,7 @@ clockE.append(secsE);
 
 // Configuration:
 const alphabet = "0123456789abcdefghij.";
-const rate = 1; // Widget updates every 'rate' seconds
+const rate = 1/5; // Widget updates every 'rate' seconds
 
 // Known constants:
 const quadcentury_days = 146097;     // The number of days in 400 years
@@ -98,6 +98,12 @@ const resetClock = (initial = false) => {
                 alphabet[20] +
                 alphabet[Math.floor(quadcentieth_of_day / 20)] +
                 alphabet[(quadcentieth_of_day % 20)];
+                if (rate > 1) {
+                        const tick = 4 * 20 * env.sec / 216;
+                        daysE.textContent = daysE.textContent +
+                                alphabet[Math.floor(tick / 4)] +
+                                alphabet[(Math.floor(tick % 4) * 5)];
+                }
 }
 
 // Initialize:
@@ -105,9 +111,22 @@ env.resetYear();
 resetClock(true);
 
 const intervalID = window.setInterval((() => {
-        env.sec++;
-        if ((env.sec % 216) === 0) resetClock();
-        secsE.textContent =
-                alphabet[Math.floor(env.sec / 20)] +
-                alphabet[(env.sec % 20)];
+        if (rate > 1) resetClock();
+        else {
+                env.tick++;
+                env.tick = env.tick % (1/rate);
+
+                secsE.textContent =
+                        alphabet[Math.floor(env.sec / 20)] +
+                        alphabet[(env.sec % 20)];
+
+                if (rate < 1) {
+                        secsE.textContent = secsE.textContent +
+                                alphabet[20] +
+                                alphabet[env.tick * 20 * rate];
+                }
+
+                if (env.tick === 0) env.sec++;
+                if ((env.sec % 216) === 0) resetClock();
+        }
 }),(rate * 1000));
