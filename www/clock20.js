@@ -118,7 +118,7 @@ const resetClock = (initial = false) => {
     const twentieth_of_year = (() => {
         for(let i = 19; i >= 0; i--)
             if (day_of_year >= first_day_of_twentieth_of_year(i)) return i;
-    }
+    })();
 
     if (initial === true || (
         day_of_year ===
