@@ -15,6 +15,7 @@ clockE.append(secsE);
 // Configuration:
 const alphabet = (() => {
     const candidate = clockE.dataset.alphabet + ".";
+    if (candidate === "empty.") return "                     ";
     if (candidate.length > 20) return candidate.substring(0,21);
     return "0123456789abcdefghij.";
 })()
@@ -104,6 +105,26 @@ const first_day_of_twentieth_of_year = (twentieth_of_year) => {
     return 0;
 }
 
+const get_digit = (c) => {
+    const digit = document.createElement("i");
+
+    if (!Number.isFinite(c)) {
+        if (c === "frac") {
+            digit.textContent = alphabet[20];
+            digit.className = "frac";
+        }
+        else digit.textContent = '?';
+    }
+    else {
+        if (!Number.isInteger(c)) c = Math.floor(c);
+        digit.className = 'z' + c;
+        digit.textContent = alphabet[c];
+    }
+
+    if (digit.textContent === ' ') digit.textContent = '';
+    return digit;
+}
+
 // Moving parts:
 const resetClock = (initial = false) => {
     const now = ms_since_quadcentury();
@@ -130,29 +151,34 @@ const resetClock = (initial = false) => {
             400 * (now / (quadcentury_days * daily_milliseconds))
         );
 
-        yearsE.textContent =
-            alphabet[Math.floor(env.quadcentury / 20)] +
-            alphabet[(env.quadcentury % 20)] +
-            alphabet[Math.floor(year_of_quadcentury / 20)] +
-            alphabet[(year_of_quadcentury % 20)] +
-            alphabet[20] +
-            alphabet[twentieth_of_year];
+        yearsE.replaceChildren(
+            get_digit(Math.floor(env.quadcentury / 20)),
+            get_digit((env.quadcentury % 20)),
+            get_digit(Math.floor(year_of_quadcentury / 20)),
+            get_digit((year_of_quadcentury % 20)),
+            get_digit("frac"),
+            get_digit(twentieth_of_year)
+        );
     }
 
-    daysE.textContent =
-        alphabet[
-            (day_of_year - first_day_of_twentieth_of_year(twentieth_of_year))
-        ] +
-        alphabet[20] +
-        alphabet[Math.floor(quadcentieth_of_day / 20)] +
-        alphabet[(quadcentieth_of_day % 20)];
-        if (rate > 1 && rate < 20) {
-            const tick = 4 * 20 * (env.sec / 216);
-            daysE.textContent = daysE.textContent +
-                alphabet[Math.floor(tick / 4)];
-            if (rate < 5.4) daysE.textContent = daysE.textContent +
-                alphabet[(Math.floor(tick % 4) * 5)];
-        }
+    daysE.replaceChildren(
+        get_digit(
+            day_of_year - first_day_of_twentieth_of_year(twentieth_of_year)
+        ),
+        get_digit("frac"),
+        get_digit(Math.floor(quadcentieth_of_day / 20)),
+        get_digit(quadcentieth_of_day % 20)
+    );
+
+    if (rate > 1 && rate < 20) {
+        const tick = 4 * 20 * (env.sec / 216);
+        daysE.append(
+            get_digit(Math.floor(tick / 4))
+        );
+        if (rate < 5.4) daysE.append(
+            get_digit(Math.floor(tick % 4) * 5)
+        );
+    }
 }
 
 // Initialize:
@@ -165,14 +191,16 @@ const intervalID = window.setInterval((() => {
         env.tick++;
         env.tick = env.tick % (1/rate);
 
-        secsE.textContent =
-            alphabet[Math.floor(env.sec / 20)] +
-            alphabet[(env.sec % 20)];
+        secsE.replaceChildren(
+            get_digit(Math.floor(env.sec / 20)),
+            get_digit(env.sec % 20)
+        );
 
         if (rate < 1) {
-            secsE.textContent = secsE.textContent +
-                alphabet[20] +
-                alphabet[env.tick * 20 * rate];
+            secsE.append(
+                get_digit("frac"),
+                get_digit(env.tick * 20 * rate)
+            );
         }
 
         if (env.tick === 0) env.sec++;

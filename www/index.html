@@ -1,9 +1,80 @@
 <!DOCTYPE html>
 <html>
-    <head><meta charset="utf-8" /><title>Vigesimal time</title></head>
+    <head>
+        <meta charset="utf-8" />
+        <title>Vigesimal time</title>
+        <style type="text/css">
+@font-face {
+    font-family: "Symbola";
+    font-display: auto;
+    font-weight: 400;
+    src: url("fonts/Symbola.otf") format('OpenType');
+}
+#clock20 {
+    width: 15em;
+    border: #000 solid 1px;
+    border-radius: 5px;
+}
+#clock20y {
+    color: #403;
+    background: #fbc;
+}
+#clock20d {
+    color: #340;
+    background: #cfb;
+}
+#clock20s {
+    color: #034;
+    background: #bcf;
+}
+#clock20 p {
+    margin: 3px;
+    text-align: center;
+    border-radius: 5px;
+}
+#clock20 i {
+    width: 1em;
+    margin: 5px;
+    padding: 0;
+    font-family: "Symbola";
+    font-size: 28px;
+    font-style: normal;
+    border: #000 dotted 1px;
+    border-radius: 5px;
+}
+#clock20 i.z0::before { content:"◯" }
+#clock20 i.z1::before { content:"𝋡" }
+#clock20 i.z2::before { content:"𝋢" }
+#clock20 i.z3::before { content:"𝋣" }
+#clock20 i.z4::before { content:"𝋤" }
+#clock20 i.z5::before { content:"𝋥" }
+#clock20 i.z6::before { content:"𝋦" }
+#clock20 i.z7::before { content:"𝋧" }
+#clock20 i.z8::before { content:"𝋨" }
+#clock20 i.z9::before { content:"𝋩" }
+#clock20 i.z10::before { content:"𝋪" }
+#clock20 i.z11::before { content:"𝋫" }
+#clock20 i.z12::before { content:"𝋬" }
+#clock20 i.z13::before { content:"𝋭" }
+#clock20 i.z14::before { content:"𝋮" }
+#clock20 i.z15::before { content:"𝋯" }
+#clock20 i.z16::before { content:"𝋰" }
+#clock20 i.z17::before { content:"𝋱" }
+#clock20 i.z18::before { content:"𝋲" }
+#clock20 i.z19::before { content:"𝋳" }
+#clock20 i.z0,  #clock20 i.z1,  #clock20 i.z2,  #clock20 i.z3,  #clock20 i.z4,
+#clock20 i.z5,  #clock20 i.z6,  #clock20 i.z7,  #clock20 i.z8,  #clock20 i.z9,
+#clock20 i.z10, #clock20 i.z11, #clock20 i.z12, #clock20 i.z13, #clock20 i.z14,
+#clock20 i.z15, #clock20 i.z16, #clock20 i.z17, #clock20 i.z18, #clock20 i.z19 {
+    display:inline-block;
+    transform:rotate(-0.25turn);
+}
+        </style>
+    </head>
     <body>
         <noscript>Enable JavaScript</noscript>
-        <div id="clock20" data-alphabet="⓪①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲" data-rate="1/4"></div>
+        <div id="clock20" data-alphabet="empty" data-rate="1/4"></div>
+        <!--div id="clock20" data-alphabet="⓪①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲" data-rate="1/4"></div-->
         <script src="clock20.js"></script>
     </body>
 </html>
