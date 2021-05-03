@@ -13,8 +13,42 @@ clockE.append(daysE);
 clockE.append(secsE);
 
 // Configuration:
-const alphabet = "0123456789abcdefghij.";
-const rate = 1/5; // Widget updates every 'rate' seconds
+const alphabet = (() => {
+        const candidate = clockE.dataset.alphabet + ".";
+        if (candidate.length > 20) return candidate.substring(0,21);
+        return "0123456789abcdefghij.";
+})();
+
+const rate = (() => { // Widget updates every 'rate' seconds
+        const candidate = (input => {
+                if (Number.isFinite(Number(input))) return input;
+
+                const fraction = input.match(/^(\d)\/(\d)$/);
+                if (fraction !== null) {
+                        const quotient = fraction[1] / fraction[2];
+                        if (Number.isFinite(quotient)) return quotient;
+                }
+
+                return 1;
+        })(clockE.dataset.rate);
+
+        if (candidate > 120) return 216;
+        if (candidate >  80) return (216 / 2);
+        if (candidate >  40) return (216 / 4);
+
+        if (candidate > 8) return (216 / 20);
+        if (candidate > 4) return (216 / (2 * 20));
+
+        if (candidate > 2) return (216 / (4 * 20));
+
+        if (candidate <=  1/20) return 1/20;
+        if (candidate <=  2/20) return 1/10;
+        if (candidate <=  4/20) return 1/5;
+        if (candidate <=  5/20) return 1/4;
+        if (candidate <= 10/20) return 1/2;
+
+        return 1;
+})();
 
 // Known constants:
 const quadcentury_days = 146097;     // The number of days in 400 years
@@ -98,10 +132,11 @@ const resetClock = (initial = false) => {
                 alphabet[20] +
                 alphabet[Math.floor(quadcentieth_of_day / 20)] +
                 alphabet[(quadcentieth_of_day % 20)];
-                if (rate > 1) {
+                if (rate > 1 && rate < 20) {
                         const tick = 4 * 20 * env.sec / 216;
                         daysE.textContent = daysE.textContent +
-                                alphabet[Math.floor(tick / 4)] +
+                                alphabet[Math.floor(tick / 4)];
+                        if (rate < 5.4) daysE.textContent = daysE.textContent +
                                 alphabet[(Math.floor(tick % 4) * 5)];
                 }
 }
