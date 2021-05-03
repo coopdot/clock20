@@ -68,6 +68,7 @@ const env = {
 
         if (time.getFullYear() < 2000 || time.getFullYear() > 2399)
             this.quadcentury = Math.floor((time.getFullYear()+10000) / 400);
+        else this.quadcentury = 30;
 
         this.new_quadcentury_date =
             Date.UTC((this.quadcentury * 400)-10000, 0, 1);
@@ -110,17 +111,13 @@ const resetClock = (initial = false) => {
         now - ms_since_quadcentury(env.new_year_date)
     ) / daily_milliseconds);
     const quadcentieth_of_day = Math.floor(
-        now / (daily_milliseconds / 400)
+        400 * (now / daily_milliseconds)
     ) % 400;
     env.sec = Math.floor(now / 1000) % 216;
 
-    let twentieth_of_year = 19;
-    while (twentieth_of_year >= 0) {
-        if (
-            day_of_year >=
-            first_day_of_twentieth_of_year(twentieth_of_year)
-        ) break;
-        twentieth_of_year--;
+    const twentieth_of_year = (() => {
+        for(let i = 19; i >= 0; i--)
+            if (day_of_year >= first_day_of_twentieth_of_year(i)) return i;
     }
 
     if (initial === true || (
@@ -130,7 +127,7 @@ const resetClock = (initial = false) => {
         if (twentieth_of_year === 0) env.resetYear();
 
         const year_of_quadcentury = Math.floor(
-            (now / (quadcentury_days * daily_milliseconds)) * 400
+            400 * (now / (quadcentury_days * daily_milliseconds))
         );
 
         yearsE.textContent =
@@ -150,7 +147,7 @@ const resetClock = (initial = false) => {
         alphabet[Math.floor(quadcentieth_of_day / 20)] +
         alphabet[(quadcentieth_of_day % 20)];
         if (rate > 1 && rate < 20) {
-            const tick = 4 * 20 * env.sec / 216;
+            const tick = 4 * 20 * (env.sec / 216);
             daysE.textContent = daysE.textContent +
                 alphabet[Math.floor(tick / 4)];
             if (rate < 5.4) daysE.textContent = daysE.textContent +
