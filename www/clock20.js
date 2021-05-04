@@ -22,6 +22,8 @@ const alphabet = (() => {
 
 const rate = (() => { // Widget updates every 'rate' seconds
     const candidate = (input => {
+        if (input === undefined) return 1;
+
         if (Number.isFinite(Number(input))) return input;
 
         const fraction = input.match(/^(\d)\/(\d)$/);
@@ -108,18 +110,16 @@ const first_day_of_twentieth_of_year = (twentieth_of_year) => {
 const get_digit = (c) => {
     const digit = document.createElement("i");
 
-    if (!Number.isFinite(c)) {
-        if (c === "frac") {
-            digit.textContent = alphabet[20];
-            digit.className = "frac";
-        }
-        else digit.textContent = '?';
-    }
-    else {
+    if (Number.isFinite(c) && c >= 0 && c <= 19) {
         if (!Number.isInteger(c)) c = Math.floor(c);
         digit.className = 'z' + c;
         digit.textContent = alphabet[c];
     }
+    else if (c === "frac") {
+        digit.textContent = alphabet[20];
+        digit.className = "frac";
+    }
+    else digit.textContent = '?';
 
     if (digit.textContent === ' ') digit.textContent = '';
     return digit;
