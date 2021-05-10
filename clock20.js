@@ -191,6 +191,9 @@ const intervalID = window.setInterval((() => {
         env.tick++;
         env.tick = env.tick % (1/rate);
 
+        if (env.tick === 0) env.sec++;
+        if ((env.sec % (216/4)) === 0) resetClock();
+
         secsE.replaceChildren(
             get_digit(Math.floor(env.sec / 20)),
             get_digit(env.sec % 20)
@@ -202,8 +205,5 @@ const intervalID = window.setInterval((() => {
                 get_digit(env.tick * 20 * rate)
             );
         }
-
-        if (env.tick === 0) env.sec++;
-        if ((env.sec % 216) === 0) resetClock();
     }
 }),(rate * 1000));
